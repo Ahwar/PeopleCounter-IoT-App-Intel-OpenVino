@@ -3,6 +3,7 @@
 | Details            |              |
 |-----------------------|---------------|
 | Programming Language: |  Python 3.5 or 3.6 |
+| Intel® Distribution of OpenVINO™ toolkit version: | 2019 R3 release |
 
 ![people-counter-python](./images/people-counter-image.png)
 
@@ -84,6 +85,9 @@ From the main directory:
    ```
 
 ## What model to use
+For now we used pretrained intel model from Intel OpenVino Model Zoo. i.e `person-detection-retail-0013
+`. To get help about downloading that model from You can use this [OpenVino Model Downloader Guide](https://docs.openvinotoolkit.org/2019_R3/_tools_downloader_README.html#model_downloader_usage)  
+
 
 It is up to you to decide on what model to use for the application. You need to find a model not already converted to Intermediate Representation format (i.e. not one of the Intel® Pre-Trained Models), convert it, and utilize the converted model in your application.
 
