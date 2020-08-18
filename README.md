@@ -3,13 +3,13 @@
 | Details            |              |
 |-----------------------|---------------|
 | Programming Language: |  Python 3.5 or 3.6 |
-| Intel® Distribution of OpenVINO™ toolkit version: | 2019 R3 release |
+| Intel® Distribution of OpenVINO™ toolkit version: | 2020.3 LTS release |
 
 ![people-counter-python](./images/people-counter-image.png)
 
 ## What it Does
 
-The people counter application will demonstrate how to create a smart video IoT solution using Intel® hardware and software tools. The app will detect people in a designated area, providing the number of people in the frame, average duration of people in frame, and total count.
+The people counter application will demonstrate how to create a smart video IoT solution using Intel® hardware and software tools. The app will detect people in a designated area, providing the number of people in the frame, average duration of people in frame, and total count. Send all calculated Stats and Output Image to the server using Mosca and FFmpeg server.
 
 ## How it Works
 
@@ -28,7 +28,7 @@ The counter will use the Inference Engine included in the Intel® Distribution o
 
 ### Software
 
-*   Intel® Distribution of OpenVINO™ toolkit 2019 R3 release
+*   Intel® Distribution of OpenVINO™ toolkit 2020.3 LTS release
 *   Node v6.17.1
 *   Npm v3.10.10
 *   CMake
@@ -39,11 +39,11 @@ The counter will use the Inference Engine included in the Intel® Distribution o
 
 ### Install Intel® Distribution of OpenVINO™ toolkit
 
-Utilize the classroom workspace, or refer to the relevant instructions for your operating system for this step.
+ refer to the relevant instructions for your operating system for this step.
 
-- [Linux/Ubuntu](./linux-setup.md)
-- [Mac](./mac-setup.md)
-- [Windows](./windows-setup.md)
+- [Linux/Ubuntu](https://docs.openvinotoolkit.org/2020.3/_docs_install_guides_installing_openvino_linux.html)
+- [Mac](https://docs.openvinotoolkit.org/2020.3/_docs_install_guides_installing_openvino_macos.html)
+- [Windows](https://docs.openvinotoolkit.org/2020.3/_docs_install_guides_installing_openvino_windows.html)
 
 ### Install Nodejs and its dependencies
 
@@ -84,13 +84,20 @@ From the main directory:
    ```
 
 ## What model to use
-For now we used pretrained intel model from Intel OpenVino Model Zoo. i.e `person-detection-retail-0013
-`. To get help about downloading that model from You can use this [OpenVino Model Downloader Guide](https://docs.openvinotoolkit.org/2019_R3/_tools_downloader_README.html#model_downloader_usage)  
+We used pretrained intel model from Intel OpenVino Model Zoo. i.e [person-detection-retail-0013](https://docs.openvinotoolkit.org/2020.3/_models_intel_person_detection_retail_0013_description_person_detection_retail_0013.html).  
+To download use steps below.
+You can also see [OpenVino Model Downloader Guide](https://docs.openvinotoolkit.org/2020.3/_tools_downloader_README.html#model_downloader_usage)  
 
+go to model downloader script 
 
-
-Note that you may need to do additional processing of the output to handle incorrect detections, such as adjusting confidence threshold or accounting for 1-2 frames where the model fails to see a person already counted and would otherwise double count.
-
+```
+cd /opt/intel/openvino/deployment_tools/tools/model_downloader
+```
+download `person-detection-retail-0013` model.
+```
+python downloader.py --name person-detection-retail-0013 -o [project_home_dir]/models/
+```
+now model is download at `[project_home_dir]/models/intel/`
 
 ## Run the application
 
@@ -143,27 +150,18 @@ You should also be able to run the application with Python 3.6, although newer v
 
 #### Running on the CPU
 
-When running Intel® Distribution of OpenVINO™ toolkit Python applications on the CPU, the CPU extension library is required. This can be found at: 
-
-```
-/opt/intel/openvino/deployment_tools/inference_engine/lib/intel64/
-```
-
-*Depending on whether you are using Linux or Mac, the filename will be either `libcpu_extension_sse4.so` or `libcpu_extension.dylib`, respectively.* (The Linux filename may be different if you are using a AVX architecture)
-
 Though by default application runs on CPU, this can also be explicitly specified by ```-d CPU``` command-line argument:
 
 ```
-python main.py -i resources/Pedestrian_Detect_2_1_1.mp4 -m your-model.xml -l /opt/intel/openvino/deployment_tools/inference_engine/lib/intel64/libcpu_extension_sse4.so -d CPU -pt 0.6 | ffmpeg -v warning -f rawvideo -pixel_format bgr24 -video_size 768x432 -framerate 24 -i - http://0.0.0.0:3004/fac.ffm
+python main.py -i resources/Pedestrian_Detect_2_1_1.mp4 -m models/intel/person-detection-retail-0013/FP32/person-detection-retail-0013.xml -d CPU -pt 0.6 | ffmpeg -v warning -f rawvideo -pixel_format bgr24 -video_size 768x432 -framerate 24 -i - http://0.0.0.0:3004/fac.ffm
 ```
-If you are in the classroom workspace, use the “Open App” button to view the output. If working locally, to see the output on a web based interface, open the link [http://0.0.0.0:3004](http://0.0.0.0:3004/) in a browser.
 
-#### Running on the Intel® Neural Compute Stick
+#### Running on the Intel® Neural Compute Stick 2
 
 To run on the Intel® Neural Compute Stick, use the ```-d MYRIAD``` command-line argument:
 
 ```
-python3.5 main.py -d MYRIAD -i resources/Pedestrian_Detect_2_1_1.mp4 -m your-model.xml -pt 0.6 | ffmpeg -v warning -f rawvideo -pixel_format bgr24 -video_size 768x432 -framerate 24 -i - http://0.0.0.0:3004/fac.ffm
+python main.py -d MYRIAD -i resources/Pedestrian_Detect_2_1_1.mp4 -m models/intel/person-detection-retail-0013/FP16/person-detection-retail-0013.xml -pt 0.6 | ffmpeg -v warning -f rawvideo -pixel_format bgr24 -video_size 768x432 -framerate 24 -i - http://0.0.0.0:3004/fac.ffm
 ```
 
 To see the output on a web based interface, open the link [http://0.0.0.0:3004](http://0.0.0.0:3004/) in a browser.

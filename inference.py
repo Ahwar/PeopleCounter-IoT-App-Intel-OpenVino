@@ -25,7 +25,7 @@
 import os
 import sys
 import logging as log
-from openvino.inference_engine import IENetwork, IECore
+from openvino.inference_engine import IECore
 
 
 class Network:
@@ -64,7 +64,7 @@ class Network:
         model_bin = os.path.splitext(model_xml)[0] + ".bin"
         ### TODO: Load the model ###
         self.plugin = IECore()
-        self.network = IENetwork(model=model_xml, weights=model_bin)
+        self.network = self.plugin.read_network(model=model_xml, weights=model_bin)
         
         ### TODO: Add any necessary extensions ###
         if cpu_extension and device == 'CPU':
